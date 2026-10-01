@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+---
+
+<BaseLayout
+  title="Заявка отправлена — Дыханов Консалтинг"
+  description="Спасибо за заявку. Мы свяжемся с вами в ближайшее время."
+  noindex
+  contact={false}
+>
+  <PageHero
+    compact
+    eyebrow="Заявка отправлена"
+    title="Спасибо! Мы свяжемся с вами в ближайшее время"
+    lead="Если вопрос срочный — позвоните нам."
+  >
+    <Fragment slot="actions">
+      <a class="btn btn--accent" href="/">На главную</a>
+    </Fragment>
+  </PageHero>
+</BaseLayout>

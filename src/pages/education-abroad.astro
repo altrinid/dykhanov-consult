@@ -1,0 +1,77 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../data/site';
+
+// Если анкета в Яндекс Формах не задана, кнопка ведёт к форме заявки внизу страницы
+const questionnaireHref = site.questionnaireUrl || '#contact';
+const isExternal = questionnaireHref.startsWith('http');
+
+// TODO: услуги, кейсы и партнёров перенести со старого сайта «Образование за рубежом»
+const services = [
+  {
+    title: 'Выбор страны и программы',
+    text: 'Подбираем направления под цели, бюджет и уровень подготовки.',
+  },
+  {
+    title: 'Подготовка документов',
+    text: 'Помогаем собрать и оформить пакет документов для поступления.',
+  },
+  {
+    title: 'Сопровождение',
+    text: 'На связи на всех этапах — от подачи заявки до начала учёбы.',
+  },
+];
+---
+
+<BaseLayout
+  title="Образование за рубежом — Дыханов Консалтинг"
+  description="Подбор страны, программы и учебного заведения, подготовка документов и сопровождение поступления за рубеж. Консультации в Калининграде."
+>
+  <PageHero
+    eyebrow="Образование за рубежом"
+    title="Поступление в зарубежные учебные заведения"
+    lead="Помогаем выбрать страну, программу и учебное заведение и пройти поступление без лишних ошибок."
+  >
+    <Fragment slot="actions">
+      <a
+        class="btn btn--accent"
+        href={questionnaireHref}
+        target={isExternal ? '_blank' : undefined}
+        rel={isExternal ? 'noopener' : undefined}
+      >
+        Заполнить анкету
+      </a>
+      <a class="btn btn--ghost-light" href={site.phoneHref}>{site.phone}</a>
+    </Fragment>
+  </PageHero>
+
+  <section class="section" aria-labelledby="edu-services-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Услуги</span>
+        <h2 id="edu-services-title">Чем поможем</h2>
+      </div>
+      <div class="grid grid--3">
+        {
+          services.map((item) => (
+            <article class="card">
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface" aria-labelledby="cases-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Кейсы</span>
+        <h2 id="cases-title">Истории поступления</h2>
+      </div>
+      <p class="todo">Кейсы и продукты партнёров перенесём со старого сайта.</p>
+    </div>
+  </section>
+</BaseLayout>

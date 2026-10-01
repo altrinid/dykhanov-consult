@@ -1,0 +1,105 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { services, site } from '../data/site';
+
+// TODO: этапы работы — сверить с текстами старой страницы /expert-consulting
+const steps = [
+  {
+    title: 'Знакомство',
+    text: 'Обсуждаем задачу, контекст бизнеса и ожидаемый результат.',
+  },
+  {
+    title: 'Диагностика',
+    text: 'Анализируем данные, процессы и рынок, находим причины проблем и точки роста.',
+  },
+  {
+    title: 'Решение',
+    text: 'Предлагаем план действий с понятными сроками, ответственными и показателями.',
+  },
+  {
+    title: 'Сопровождение',
+    text: 'Помогаем внедрить изменения и проверяем, что они дают результат.',
+  },
+];
+---
+
+<BaseLayout
+  title="Эксперт Консалтинг: финансы, маркетинг, управление | Калининград"
+  description="Консалтинг для бизнеса в области финансов, маркетинга и корпоративного управления. 25+ лет опыта, 700+ проектов. Калининград, ул. Сергеева, 14."
+>
+  <PageHero
+    eyebrow="Эксперт Консалтинг"
+    title="Экспертный консалтинг для бизнеса"
+    lead="Финансы, маркетинг и корпоративное управление: помогаем увидеть картину целиком и выбрать решение, которое подходит именно вашей компании."
+    stats={site.stats}
+  >
+    <Fragment slot="actions">
+      <a class="btn btn--accent" href="#contact">Обсудить задачу</a>
+      <a class="btn btn--ghost-light" href={site.phoneHref}>{site.phone}</a>
+    </Fragment>
+  </PageHero>
+
+  <section class="section" aria-labelledby="areas-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Компетенции</span>
+        <h2 id="areas-title">Направления консалтинга</h2>
+      </div>
+      <div class="grid grid--3">
+        {
+          services.map((item) => (
+            <article class="card">
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface" aria-labelledby="steps-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Как мы работаем</span>
+        <h2 id="steps-title">Четыре шага от задачи к результату</h2>
+      </div>
+      <ol class="steps">
+        {
+          steps.map((step) => (
+            <li class="card">
+              <h3>{step.title}</h3>
+              <p>{step.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: clamp(16px, 2.4vw, 24px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+
+  .steps li {
+    counter-increment: step;
+  }
+
+  .steps li::before {
+    content: counter(step, decimal-leading-zero);
+    display: block;
+    color: var(--c-accent-ink);
+    font-size: 0.875rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+  }
+</style>

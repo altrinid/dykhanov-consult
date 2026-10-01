@@ -1,0 +1,234 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import NewsCard from '../components/NewsCard.astro';
+import PageHero from '../components/PageHero.astro';
+import { services, site } from '../data/site';
+import { getNews } from '../lib/news';
+
+const latestNews = (await getNews()).slice(0, 3);
+
+// TODO: описания направлений — сверить с текстами старого сайта
+const directions = [
+  {
+    num: '01',
+    title: 'Дыханов Консалтинг',
+    text: 'Управленческий консалтинг для собственников и руководителей: финансы, маркетинг, корпоративное управление.',
+    href: '#services',
+    cta: 'Услуги',
+  },
+  {
+    num: '02',
+    title: 'Эксперт Консалтинг',
+    text: 'Экспертные и консультационные услуги для компаний: от диагностики до сопровождения изменений.',
+    href: '/expert-consulting/',
+    cta: 'Подробнее',
+  },
+  {
+    num: '03',
+    title: 'Образование за рубежом',
+    text: 'Подбор страны, программы и учебного заведения, сопровождение поступления.',
+    href: '/education-abroad/',
+    cta: 'Подробнее',
+  },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: site.name,
+  url: `${site.url}/`,
+  logo: `${site.url}/apple-touch-icon.png`,
+  image: `${site.url}/og-image.png`,
+  description: site.description,
+  telephone: site.phone,
+  email: site.email,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.address.street,
+    addressLocality: site.address.city,
+    postalCode: site.address.postalCode,
+    addressCountry: 'RU',
+  },
+};
+---
+
+<BaseLayout
+  title="Бизнес-консалтинг в Калининграде — Дыханов Консалтинг"
+  description="Консалтинг в области финансов, маркетинга и корпоративного управления. 25+ лет на рынке, 700+ проектов. Запишитесь на консультацию."
+  jsonLd={jsonLd}
+>
+  <PageHero
+    eyebrow={site.name}
+    title="Бизнес-консалтинг в Калининграде"
+    lead="Финансы, маркетинг и корпоративное управление. Помогаем собственникам и руководителям разобраться в ситуации и принять взвешенное решение."
+    stats={site.stats}
+  >
+    <Fragment slot="actions">
+      <a class="btn btn--accent" href="#contact">Получить консультацию</a>
+      <a class="btn btn--ghost-light" href={site.phoneHref}>{site.phone}</a>
+    </Fragment>
+  </PageHero>
+
+  <section class="section" aria-labelledby="directions-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Направления</span>
+        <h2 id="directions-title">Три направления работы</h2>
+      </div>
+      <div class="grid grid--3">
+        {
+          directions.map((item) => (
+            <article class="card direction">
+              <span class="direction__num" aria-hidden="true">
+                {item.num}
+              </span>
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+              <a class="direction__link" href={item.href}>
+                {item.cta}
+                <span class="sr-only">: {item.title}</span>
+                <span aria-hidden="true">→</span>
+              </a>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface" id="services" aria-labelledby="services-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Чем помогаем</span>
+        <h2 id="services-title">Консалтинг по ключевым задачам бизнеса</h2>
+        <p>Работаем с компаниями в Калининграде и регионе. Начинаем с диагностики, чтобы предложить решение под конкретную задачу.</p>
+      </div>
+      <div class="grid grid--3">
+        {
+          services.map((item) => (
+            <article class="card">
+              <h3>{item.title}</h3>
+              <p>{item.text}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="about-title">
+    <div class="container about">
+      <figure class="about__photo">
+        {/* TODO: заменить заглушку фото со старого сайта (src/assets + <Image />) */}
+        <div class="about__placeholder" aria-hidden="true">ГД</div>
+      </figure>
+      <div class="about__text">
+        <span class="eyebrow">{site.head.role}</span>
+        <h2 id="about-title">{site.head.name}</h2>
+        <p class="todo">Биографию и опыт перенесём со старого сайта.</p>
+        <p>
+          <a class="btn btn--ghost" href={site.head.delorosUrl} target="_blank" rel="noopener">
+            Профиль в «Деловой России»
+          </a>
+        </p>
+      </div>
+    </div>
+  </section>
+
+  {
+    latestNews.length > 0 && (
+      <section class="section section--surface" aria-labelledby="news-title">
+        <div class="container">
+          <div class="section-head news-head">
+            <div>
+              <span class="eyebrow">Новости</span>
+              <h2 id="news-title">Последние новости</h2>
+            </div>
+            <a class="btn btn--ghost" href="/news/">
+              Все новости
+            </a>
+          </div>
+          <div class="grid grid--3">
+            {latestNews.map((item) => (
+              <NewsCard item={item} />
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+</BaseLayout>
+
+<style>
+  .direction {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .direction__num {
+    color: var(--c-accent-ink);
+    font-size: 0.875rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+  }
+
+  .direction p {
+    flex: 1;
+  }
+
+  .direction__link {
+    display: inline-flex;
+    gap: 6px;
+    color: var(--c-ink);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .direction__link:hover {
+    color: var(--c-accent-ink);
+  }
+
+  .about {
+    display: grid;
+    gap: clamp(28px, 5vw, 64px);
+    align-items: center;
+  }
+
+  @media (min-width: 860px) {
+    .about {
+      grid-template-columns: minmax(260px, 0.8fr) 1.2fr;
+    }
+  }
+
+  .about__photo {
+    margin: 0;
+  }
+
+  .about__placeholder {
+    display: grid;
+    place-items: center;
+    aspect-ratio: 4 / 5;
+    max-width: 420px;
+    border-radius: var(--radius);
+    background:
+      radial-gradient(420px 320px at 80% 0%, rgb(201 162 77 / 0.35), transparent 60%),
+      var(--c-ink);
+    color: rgb(255 255 255 / 0.85);
+    font-size: clamp(3rem, 2rem + 4vw, 5rem);
+    font-weight: 800;
+    letter-spacing: 0.04em;
+  }
+
+  .about__text > * + * {
+    margin-top: 16px;
+  }
+
+  .news-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    max-width: none;
+  }
+</style>

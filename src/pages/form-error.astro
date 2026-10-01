@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { site } from '../data/site';
+---
+
+<BaseLayout
+  title="Заявка не отправлена — Дыханов Консалтинг"
+  description="Не удалось отправить заявку. Свяжитесь с нами по телефону или e-mail."
+  noindex
+  contact={false}
+>
+  <PageHero
+    compact
+    eyebrow="Заявка не отправлена"
+    title="Не получилось отправить заявку"
+    lead="Проверьте, что заполнены имя, телефон и отмечено согласие, или свяжитесь с нами напрямую."
+  >
+    <Fragment slot="actions">
+      <a class="btn btn--accent" href={site.phoneHref}>{site.phone}</a>
+      <a class="btn btn--ghost-light" href={`mailto:${site.email}`}>{site.email}</a>
+    </Fragment>
+  </PageHero>
+</BaseLayout>

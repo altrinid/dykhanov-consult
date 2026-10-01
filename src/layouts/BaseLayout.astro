@@ -1,0 +1,51 @@
+---
+import '@fontsource-variable/manrope';
+import '../styles/global.css';
+import ContactSection from '../components/ContactSection.astro';
+import CookieNotice from '../components/CookieNotice.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+import SEO from '../components/SEO.astro';
+import YandexMetrika from '../components/YandexMetrika.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  image?: string;
+  noindex?: boolean;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  /** Показывать блок с формой заявки внизу страницы */
+  contact?: boolean;
+}
+
+const { title, description, image, noindex = false, jsonLd, contact = true } = Astro.props;
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0d1b2e" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <SEO
+      title={title}
+      description={description}
+      image={image}
+      noindex={noindex}
+      jsonLd={jsonLd}
+    />
+    <YandexMetrika />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Перейти к содержанию</a>
+    <Header ctaHref={contact ? '#contact' : '/contacts/#contact'} />
+    <main id="main">
+      <slot />
+      {contact && <ContactSection />}
+    </main>
+    <Footer />
+    <CookieNotice />
+  </body>
+</html>

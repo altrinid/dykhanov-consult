@@ -1,0 +1,115 @@
+---
+import Logo from './Logo.astro';
+import { fullAddress, nav, site } from '../data/site';
+
+const year = new Date().getFullYear();
+const requisites = [
+  site.legalName || site.name,
+  site.requisites.inn && `ИНН ${site.requisites.inn}`,
+  site.requisites.ogrn && `ОГРН ${site.requisites.ogrn}`,
+].filter(Boolean);
+---
+
+<footer class="footer">
+  <div class="container footer__grid">
+    <div class="footer__brand">
+      <Logo variant="light" />
+      <p>{site.description}</p>
+    </div>
+
+    <nav aria-label="Разделы сайта">
+      <p class="footer__title">Разделы</p>
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div>
+      <p class="footer__title">Контакты</p>
+      <ul>
+        <li><a href={site.phoneHref}>{site.phone}</a></li>
+        <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
+        <li><a href={site.mapUrl} target="_blank" rel="noopener">{fullAddress}</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container footer__bottom">
+    <p>© {year} {requisites.join(' · ')}</p>
+    <p class="footer__legal">
+      <a href="/privacy/">Политика обработки персональных данных</a>
+      <a href="/consent/">Согласие на обработку персональных данных</a>
+    </p>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    background: #0a1524;
+    color: var(--c-on-dark-muted);
+    font-size: 0.9375rem;
+  }
+
+  .footer__grid {
+    display: grid;
+    gap: 36px;
+    padding-block: 56px 40px;
+  }
+
+  @media (min-width: 768px) {
+    .footer__grid {
+      grid-template-columns: 1.4fr 1fr 1fr;
+    }
+  }
+
+  .footer__brand p {
+    max-width: 38ch;
+    margin-top: 18px;
+  }
+
+  .footer__title {
+    margin-bottom: 14px;
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .footer ul {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .footer a {
+    color: var(--c-on-dark-muted);
+    text-decoration: none;
+  }
+
+  .footer a:hover {
+    color: #fff;
+    text-decoration: underline;
+  }
+
+  .footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px 32px;
+    padding-block: 22px 28px;
+    border-top: 1px solid rgb(255 255 255 / 0.1);
+    font-size: 0.875rem;
+  }
+
+  .footer__legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+  }
+</style>

@@ -1,0 +1,13 @@
+{
+  "name": "dykhanov-consult",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Сайт «Дыханов Консалтинг» — dykhanov-consult.ru",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro check && astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  }
+}

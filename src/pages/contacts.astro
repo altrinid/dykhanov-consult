@@ -1,0 +1,55 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+import { fullAddress, site } from '../data/site';
+---
+
+<BaseLayout
+  title="Контакты — Дыханов Консалтинг, Калининград"
+  description={`Телефон, e-mail и адрес офиса «Дыханов Консалтинг»: ${fullAddress}.`}
+>
+  <PageHero compact eyebrow="Контакты" title="Как с нами связаться" />
+
+  <section class="section">
+    <div class="container grid grid--3">
+      <div class="card contact-card">
+        <h2>Телефон</h2>
+        <p><a href={site.phoneHref}>{site.phone}</a></p>
+      </div>
+      <div class="card contact-card">
+        <h2>E-mail</h2>
+        <p><a href={`mailto:${site.email}`}>{site.email}</a></p>
+      </div>
+      <div class="card contact-card">
+        <h2>Офис</h2>
+        <p>{fullAddress}</p>
+        <p>
+          <a href={site.mapUrl} target="_blank" rel="noopener">Открыть в Яндекс Картах</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .contact-card h2 {
+    color: var(--c-muted);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  .contact-card p {
+    color: var(--c-ink);
+    font-size: 1.125rem;
+    font-weight: 700;
+  }
+
+  .contact-card a {
+    color: var(--c-ink);
+  }
+
+  .contact-card a:hover {
+    color: var(--c-accent-ink);
+  }
+</style>

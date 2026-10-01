@@ -1,0 +1,89 @@
+---
+import ContactForm from './ContactForm.astro';
+import { fullAddress, site } from '../data/site';
+
+interface Props {
+  title?: string;
+  text?: string;
+}
+
+const {
+  title = 'Обсудим вашу задачу',
+  text = 'Оставьте контакты — перезвоним, уточним задачу и предложим формат работы.',
+} = Astro.props;
+---
+
+<section class="section section--dark contact" id="contact" aria-labelledby="contact-title">
+  <div class="container contact__grid">
+    <div class="contact__info">
+      <span class="eyebrow">Консультация</span>
+      <h2 id="contact-title">{title}</h2>
+      <p class="contact__text">{text}</p>
+      <dl class="contact__list">
+        <div>
+          <dt>Телефон</dt>
+          <dd><a href={site.phoneHref}>{site.phone}</a></dd>
+        </div>
+        <div>
+          <dt>E-mail</dt>
+          <dd><a href={`mailto:${site.email}`}>{site.email}</a></dd>
+        </div>
+        <div>
+          <dt>Офис</dt>
+          <dd><a href={site.mapUrl} target="_blank" rel="noopener">{fullAddress}</a></dd>
+        </div>
+      </dl>
+    </div>
+    <ContactForm />
+  </div>
+</section>
+
+<style>
+  .contact__grid {
+    display: grid;
+    gap: clamp(32px, 5vw, 64px);
+    align-items: start;
+  }
+
+  @media (min-width: 960px) {
+    .contact__grid {
+      grid-template-columns: 0.9fr 1.1fr;
+    }
+  }
+
+  .contact__info > * + * {
+    margin-top: 16px;
+  }
+
+  .contact__text {
+    color: var(--c-on-dark-muted);
+    font-size: 1.125rem;
+    max-width: 44ch;
+  }
+
+  .contact__list {
+    display: grid;
+    gap: 18px;
+    margin: 32px 0 0;
+  }
+
+  .contact__list dt {
+    color: var(--c-on-dark-muted);
+    font-size: 0.875rem;
+  }
+
+  .contact__list dd {
+    margin: 2px 0 0;
+  }
+
+  .contact__list a {
+    color: #fff;
+    font-size: 1.125rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .contact__list a:hover {
+    text-decoration: underline;
+  }
+</style>
