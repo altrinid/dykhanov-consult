@@ -1,57 +1,135 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PageHero from '../components/PageHero.astro';
+import expertLogo from '../assets/img/expert-consulting-logo.png';
+import { clients } from '../data/clients';
 import { services, site } from '../data/site';
 
-// TODO: этапы работы — сверить с текстами старой страницы /expert-consulting
-const steps = [
+// Тексты — со страницы /expert-consulting старого сайта (архив от 27.03.2025)
+
+const stats = [
+  { value: '1997', label: 'год основания компании' },
+  { value: '900+', label: 'успешных проектов разной сложности' },
+  { value: '50+', label: 'проектов регионального масштаба' },
+];
+
+// TODO: годы и события восстановлены из графического таймлайна Tilda — сверить с клиентом
+const history = [
+  { year: '1997', text: 'Основание компании, создание департамента реструктуризации' },
+  { year: '1999', text: 'Компания в рейтинге топ-100 «Управленческий консалтинг» агентства «Эксперт РА»' },
+  { year: '2000', text: 'Открытие департамента финансов' },
+  { year: '2001', text: 'Открытие департамента маркетинга' },
+  { year: '2002', text: 'Одними из первых внедрили систему менеджмента качества консалтинговых услуг по ISO 9001' },
+  { year: '2005–2008', text: 'Успешные ресертификации в TÜV NORD' },
+  { year: '2011', text: 'Создание ассоциации консультантов' },
+];
+
+const experts = [
+  { name: 'Георгий Дыханов', role: 'Управляющий партнёр' },
+  { name: 'Лариса Подгорная', role: 'Консультант по бизнес-процессам и управлению персоналом' },
+  { name: 'Матвей Лебединский', role: 'Консультант по маркетингу, отраслевой консультант (индустрия гостеприимства)' },
+  { name: 'Инна Тюсенкова', role: 'Консультант по финансам' },
+];
+
+const cases = [
   {
-    title: 'Знакомство',
-    text: 'Обсуждаем задачу, контекст бизнеса и ожидаемый результат.',
+    year: '2014',
+    client: 'KPMG Baltics SIA (Латвия)',
+    task: 'Оценка рыночной стоимости долей ООО «Архитектурно-строительное агентство Калининград»',
   },
   {
-    title: 'Диагностика',
-    text: 'Анализируем данные, процессы и рынок, находим причины проблем и точки роста.',
+    year: '2014',
+    client: 'ЗАО ИКБ «Европейский»',
+    task: 'Маркетинговое исследование обслуживания клиентов и качества работы персонала банка методом «Тайный покупатель»',
   },
   {
-    title: 'Решение',
-    text: 'Предлагаем план действий с понятными сроками, ответственными и показателями.',
+    year: '2014',
+    client: 'ООО «Кениг Трейд»',
+    task: 'Формирование базы данных по точкам общепита в Калининграде, Зеленоградске и Светлогорске',
   },
   {
-    title: 'Сопровождение',
-    text: 'Помогаем внедрить изменения и проверяем, что они дают результат.',
+    year: '2014',
+    client: 'Министерство финансов Калининградской области',
+    task: 'Анализ практики мониторинга программ и выработка методических рекомендаций',
+  },
+  {
+    year: '2013–2014',
+    client: 'ООО «Лорри Сервис»',
+    task: 'Анализ состояния конкуренции на рынках сервиса и ремонта грузовиков VOLVO и MAN в Калининградской области',
+  },
+  {
+    year: '2011',
+    client: 'ГК «Панорама-Люкс»',
+    task: 'Постановка системы управленческого учёта',
   },
 ];
+
+const initials = (name: string) =>
+  name
+    .split(' ')
+    .map((part) => part[0])
+    .join('');
 ---
 
 <BaseLayout
-  title="Эксперт Консалтинг: финансы, маркетинг, управление | Калининград"
-  description="Консалтинг для бизнеса в области финансов, маркетинга и корпоративного управления. 25+ лет опыта, 700+ проектов. Калининград, ул. Сергеева, 14."
+  title="Эксперт Консалтинг — управленческий и финансовый консалтинг в Калининграде"
+  description="Консалтинговая компания из Калининграда: финансы, маркетинг, корпоративное управление. С 1997 года, более 900 проектов. Бесплатная первичная консультация."
 >
   <PageHero
     eyebrow="Эксперт Консалтинг"
-    title="Экспертный консалтинг для бизнеса"
-    lead="Финансы, маркетинг и корпоративное управление: помогаем увидеть картину целиком и выбрать решение, которое подходит именно вашей компании."
-    stats={site.stats}
+    title="Управленческий, стратегический и финансовый консалтинг"
+    lead="Помогаем клиентам развивать бизнес, расти и решать проблемы через постановку систем менеджмента на основе новейших управленческих технологий."
+    stats={stats}
   >
     <Fragment slot="actions">
-      <a class="btn btn--accent" href="#contacts">Обсудить задачу</a>
+      <a class="btn btn--accent" href="#contacts">Получить консультацию</a>
       <a class="btn btn--ghost-light" href={site.phoneHref}>{site.phone}</a>
     </Fragment>
   </PageHero>
 
-  <section class="section" aria-labelledby="areas-title">
+  <section class="section" aria-labelledby="mission-title">
+    <div class="container mission">
+      <Image
+        class="mission__logo"
+        src={expertLogo}
+        alt="Консалтинговый центр «Эксперт Консалтинг»"
+        width={320}
+        densities={[1, 2]}
+      />
+      <div class="mission__text">
+        <span class="eyebrow">Миссия</span>
+        <h2 id="mission-title">Качество измеряем ростом бизнеса клиентов</h2>
+        <p>
+          Качество наших услуг измеримо ростом доходности и эффективности бизнеса клиентов. Мы
+          содействуем позитивному развитию общества и бизнеса и превращаем наши знания в материальные
+          ценности для клиентов и наших сотрудников.
+        </p>
+        <p>
+          Работаем с компаниями из различных секторов экономики. Полезность наших рекомендаций можно
+          измерить в конкретных показателях — в увеличении денежных потоков, доходов или стоимости
+          бизнеса клиента.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface" aria-labelledby="services-title">
     <div class="container">
       <div class="section-head">
-        <span class="eyebrow">Компетенции</span>
-        <h2 id="areas-title">Направления консалтинга</h2>
+        <span class="eyebrow">Услуги</span>
+        <h2 id="services-title">Полный цикл консалтинговых услуг</h2>
       </div>
-      <div class="grid grid--4">
+      <div class="grid grid--3">
         {
-          services.map((item) => (
-            <article class="card">
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
+          services.map((group) => (
+            <article class="card service">
+              <h3>{group.title}</h3>
+              <ul>
+                {group.items.map((item) => (
+                  <li>{item}</li>
+                ))}
+              </ul>
             </article>
           ))
         }
@@ -59,47 +137,300 @@ const steps = [
     </div>
   </section>
 
-  <section class="section section--surface" aria-labelledby="steps-title">
+  <section class="section" aria-labelledby="history-title">
     <div class="container">
       <div class="section-head">
-        <span class="eyebrow">Как мы работаем</span>
-        <h2 id="steps-title">Четыре шага от задачи к результату</h2>
+        <span class="eyebrow">История</span>
+        <h2 id="history-title">Ключевые факты из истории компании</h2>
       </div>
-      <ol class="steps">
+      <ol class="timeline">
         {
-          steps.map((step) => (
-            <li class="card">
-              <h3>{step.title}</h3>
-              <p>{step.text}</p>
+          history.map((item) => (
+            <li>
+              <span class="timeline__year">{item.year}</span>
+              <p>{item.text}</p>
             </li>
           ))
         }
       </ol>
     </div>
   </section>
+
+  <section class="section section--dark" aria-labelledby="experts-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Команда</span>
+        <h2 id="experts-title">Эксперты центра</h2>
+        <p>
+          Имеют российское и европейское образование и многолетний опыт работы на рынках России, ЕС,
+          СНГ, США, Азии и Африки. Входят в руководящие составы комитетов Торгово-промышленной палаты
+          Калининградской области, Российского союза промышленников и предпринимателей, а также комитетов
+          «Деловой России».
+        </p>
+      </div>
+      <ul class="experts">
+        {
+          experts.map((person) => (
+            <li>
+              <span class="experts__avatar" aria-hidden="true">
+                {initials(person.name)}
+              </span>
+              <strong>{person.name}</strong>
+              <span>{person.role}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="cases-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Кейсы</span>
+        <h2 id="cases-title">Примеры проектов</h2>
+        <p>
+          Помогли более чем 700 предприятиям, выполнили ряд международных проектов в Калининградской
+          области и за её пределами.
+        </p>
+      </div>
+      <div class="grid grid--3">
+        {
+          cases.map((item) => (
+            <article class="card case">
+              <span class="case__year">{item.year}</span>
+              <h3>{item.client}</h3>
+              <p>{item.task}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--surface" aria-labelledby="clients-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Партнёры</span>
+        <h2 id="clients-title">С нами работают</h2>
+      </div>
+      <ul class="logos">
+        {
+          clients.map((item) => (
+            <li>
+              <Image src={item.logo} alt={item.name} height={56} densities={[1, 2]} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section consult" aria-labelledby="consult-title">
+    <div class="container consult__box">
+      <div>
+        <h2 id="consult-title">Запишитесь на бесплатную консультацию</h2>
+        <p>
+          Ответим на вопросы о финансовом планировании: бюджетирование, оптимизация налогообложения,
+          привлечение инвестиций и займов — и на другие ваши запросы.
+        </p>
+        <p class="consult__who">{site.head.name}, {site.head.role.toLowerCase()}</p>
+      </div>
+      <a class="btn btn--accent" href="#contacts">Записаться</a>
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
-  .steps {
+  .mission {
+    display: grid;
+    gap: clamp(28px, 5vw, 64px);
+    align-items: center;
+  }
+
+  @media (min-width: 860px) {
+    .mission {
+      grid-template-columns: minmax(220px, 320px) 1fr;
+    }
+  }
+
+  .mission__logo {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+  }
+
+  .mission__text > * + * {
+    margin-top: 16px;
+  }
+
+  .service ul {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .service li {
+    position: relative;
+    padding-left: 18px;
+    color: var(--c-text);
+  }
+
+  .service li::before {
+    content: '';
+    position: absolute;
+    top: 0.62em;
+    left: 0;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--c-accent);
+  }
+
+  .timeline {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .timeline li {
+    position: relative;
+    padding: 22px 22px 22px 0;
+    border-top: 2px solid var(--c-line);
+  }
+
+  .timeline li::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    left: 0;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--c-brand);
+  }
+
+  .timeline__year {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--c-brand);
+    font-size: 1.5rem;
+    font-weight: 800;
+  }
+
+  .experts {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
     gap: clamp(16px, 2.4vw, 24px);
     margin: 0;
     padding: 0;
     list-style: none;
-    counter-reset: step;
   }
 
-  .steps li {
-    counter-increment: step;
+  .experts li {
+    display: grid;
+    gap: 6px;
+    align-content: start;
+    padding: 24px;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    border-radius: var(--radius);
+    background: rgb(255 255 255 / 0.04);
   }
 
-  .steps li::before {
-    content: counter(step, decimal-leading-zero);
-    display: block;
+  .experts__avatar {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    margin-bottom: 8px;
+    border-radius: 50%;
+    background: var(--c-accent);
+    color: var(--c-ink);
+    font-weight: 800;
+  }
+
+  .experts strong {
+    color: #fff;
+    font-size: 1.125rem;
+  }
+
+  .experts li > span:last-child {
+    color: var(--c-on-dark-muted);
+  }
+
+  .case__year {
     color: var(--c-accent-ink);
     font-size: 0.875rem;
     font-weight: 800;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
+  }
+
+  .logos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .logos li {
+    display: grid;
+    flex: 0 1 190px;
+    place-items: center;
+    min-height: 104px;
+    padding: 18px;
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius);
+    background: #fff;
+  }
+
+  .logos img {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 56px;
+    object-fit: contain;
+  }
+
+  .consult__box {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px 48px;
+    padding: clamp(28px, 4vw, 48px);
+    border-radius: var(--radius);
+    background:
+      radial-gradient(600px 300px at 90% 0%, rgb(201 162 77 / 0.25), transparent 60%),
+      var(--c-ink-2);
+    color: #fff;
+  }
+
+  .consult__box > div {
+    flex: 1 1 420px;
+  }
+
+  .consult__box > div > * + * {
+    margin-top: 12px;
+  }
+
+  .consult__box h2 {
+    color: #fff;
+  }
+
+  .consult__box p {
+    color: var(--c-on-dark-muted);
+  }
+
+  .consult__who {
+    font-size: 0.9375rem;
+    font-style: italic;
   }
 </style>
