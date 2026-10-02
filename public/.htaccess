@@ -8,13 +8,20 @@ AddDefaultCharset utf-8
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  # Редиректы на https и с www работают только на основном домене: до переключения DNS
+  # сайт можно проверить на техническом домене хостинга. Проверки Let's Encrypt
+  # (/.well-known/acme-challenge/) не перенаправляются.
+
   # http → https
+  RewriteCond %{HTTP_HOST} ^(www\.)?dykhanov-consult\.ru$ [NC]
+  RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/
   RewriteCond %{HTTPS} off
   RewriteCond %{HTTP:X-Forwarded-Proto} !https
   RewriteRule ^ https://dykhanov-consult.ru%{REQUEST_URI} [R=301,L]
 
   # www → без www
-  RewriteCond %{HTTP_HOST} ^www\. [NC]
+  RewriteCond %{HTTP_HOST} ^www\.dykhanov-consult\.ru$ [NC]
+  RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/
   RewriteRule ^ https://dykhanov-consult.ru%{REQUEST_URI} [R=301,L]
 
   # Старые адреса страниц Tilda → новые
