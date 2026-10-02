@@ -1,0 +1,21 @@
+# сборка
+dist/
+.astro/
+
+# зависимости
+node_modules/
+
+# окружение и секреты
+.env
+.env.*
+!.env.example
+form-config.php
+public/api/config.php
+
+# логи
+npm-debug.log*
+
+# системное
+.DS_Store
+.idea/
+.vscode/
