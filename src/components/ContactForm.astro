@@ -1,0 +1,257 @@
+---
+import { site } from '../data/site';
+
+interface Props {
+  id?: string;
+  submitLabel?: string;
+}
+
+const { id = 'cf', submitLabel = 'Отправить заявку' } = Astro.props;
+---
+
+<form
+  class="form"
+  action="/api/send.php"
+  method="post"
+  data-contact-form
+  data-fallback-phone={site.phone}
+>
+  <input type="hidden" name="page" value={Astro.url.pathname} />
+  <input type="hidden" name="elapsed" value="" />
+
+  {/* Ловушка для ботов: люди это поле не видят и не заполняют */}
+  <div class="form__hp" aria-hidden="true">
+    <label for={`${id}-website`}>Не заполняйте это поле</label>
+    <input id={`${id}-website`} type="text" name="website" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="form__row">
+    <div class="field">
+      <label for={`${id}-name`}>Имя <span aria-hidden="true">*</span></label>
+      <input
+        id={`${id}-name`}
+        name="name"
+        type="text"
+        required
+        minlength="2"
+        maxlength="100"
+        autocomplete="name"
+      />
+    </div>
+    <div class="field">
+      <label for={`${id}-phone`}>Телефон <span aria-hidden="true">*</span></label>
+      <input
+        id={`${id}-phone`}
+        name="phone"
+        type="tel"
+        required
+        maxlength="30"
+        autocomplete="tel"
+        inputmode="tel"
+        placeholder="+7"
+      />
+    </div>
+  </div>
+
+  <div class="field">
+    <label for={`${id}-email`}>E-mail</label>
+    <input id={`${id}-email`} name="email" type="email" maxlength="120" autocomplete="email" />
+  </div>
+
+  <div class="field">
+    <label for={`${id}-message`}>Коротко о задаче</label>
+    <textarea id={`${id}-message`} name="message" rows="4" maxlength="2000"></textarea>
+  </div>
+
+  <div class="form__check">
+    <input id={`${id}-consent`} name="consent" type="checkbox" value="yes" required />
+    <label for={`${id}-consent`}>
+      Даю <a href="/consent/" target="_blank">согласие на обработку персональных данных</a>
+    </label>
+  </div>
+
+  <p class="form__note">
+    Как мы обращаемся с данными — в <a href="/privacy/" target="_blank"
+      >политике обработки персональных данных</a
+    >.
+  </p>
+
+  <button class="btn btn--accent form__submit" type="submit">{submitLabel}</button>
+  <p class="form__status" role="status" aria-live="polite"></p>
+</form>
+
+<script>
+  type YmWindow = Window & { ym?: (...args: unknown[]) => void; __ymId?: number };
+
+  document.querySelectorAll<HTMLFormElement>('[data-contact-form]').forEach((form) => {
+    const startedAt = Date.now();
+    const status = form.querySelector<HTMLElement>('.form__status');
+    const submit = form.querySelector<HTMLButtonElement>('button[type="submit"]');
+    const elapsed = form.querySelector<HTMLInputElement>('input[name="elapsed"]');
+    const phone = form.querySelector<HTMLInputElement>('input[name="phone"]');
+    const fallbackPhone = form.dataset.fallbackPhone ?? '';
+
+    const setStatus = (text: string, state: 'ok' | 'error' | 'pending') => {
+      if (!status) return;
+      status.textContent = text;
+      status.dataset.state = state;
+    };
+
+    phone?.addEventListener('input', () => phone.setCustomValidity(''));
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+
+      if (phone) {
+        const digits = phone.value.replace(/\D/g, '').length;
+        phone.setCustomValidity(
+          digits >= 10 && digits <= 15 ? '' : 'Укажите номер полностью, например +7 911 000-00-00',
+        );
+      }
+      if (!form.reportValidity()) return;
+      if (elapsed) elapsed.value = String(Date.now() - startedAt);
+
+      if (submit) submit.disabled = true;
+      setStatus('Отправляем…', 'pending');
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { Accept: 'application/json' },
+        });
+        const data = (await response.json().catch(() => null)) as {
+          ok?: boolean;
+          message?: string;
+        } | null;
+
+        if (response.ok && data?.ok) {
+          form.reset();
+          setStatus(data.message ?? 'Спасибо! Заявка отправлена.', 'ok');
+          const w = window as YmWindow;
+          if (w.ym && w.__ymId) w.ym(w.__ymId, 'reachGoal', 'lead');
+        } else {
+          setStatus(
+            data?.message ?? `Не удалось отправить заявку. Позвоните нам: ${fallbackPhone}`,
+            'error',
+          );
+        }
+      } catch {
+        setStatus(`Нет связи с сервером. Позвоните нам: ${fallbackPhone}`, 'error');
+      } finally {
+        if (submit) submit.disabled = false;
+      }
+    });
+  });
+</script>
+
+<style>
+  .form {
+    display: grid;
+    gap: 18px;
+    padding: clamp(22px, 3vw, 36px);
+    border-radius: var(--radius);
+    background: #fff;
+    color: var(--c-text);
+    box-shadow: var(--shadow);
+  }
+
+  .form__row {
+    display: grid;
+    gap: 18px;
+  }
+
+  @media (min-width: 560px) {
+    .form__row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .field {
+    display: grid;
+    gap: 6px;
+  }
+
+  .field label {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    color: var(--c-ink);
+  }
+
+  .field input,
+  .field textarea {
+    width: 100%;
+    min-height: 50px;
+    padding: 12px 14px;
+    border: 1.5px solid var(--c-line);
+    border-radius: var(--radius-sm);
+    background: #fff;
+    color: var(--c-text);
+    font: inherit;
+    transition: border-color 0.2s ease;
+  }
+
+  .field textarea {
+    resize: vertical;
+  }
+
+  .field input:focus-visible,
+  .field textarea:focus-visible {
+    outline: 3px solid rgb(44 0 115 / 0.2);
+    outline-offset: 0;
+    border-color: var(--c-link);
+  }
+
+  .form__check {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.9375rem;
+  }
+
+  .form__check input {
+    flex: none;
+    width: 20px;
+    height: 20px;
+    margin: 2px 0 0;
+    accent-color: var(--c-ink);
+  }
+
+  .form__note {
+    margin-top: -6px;
+    color: var(--c-muted);
+    font-size: 0.875rem;
+  }
+
+  .form__submit {
+    justify-self: start;
+  }
+
+  .form__status:empty {
+    display: none;
+  }
+
+  .form__status {
+    font-weight: 600;
+  }
+
+  .form__status[data-state='ok'] {
+    color: var(--c-ok);
+  }
+
+  .form__status[data-state='error'] {
+    color: var(--c-err);
+  }
+
+  .form__status[data-state='pending'] {
+    color: var(--c-muted);
+  }
+
+  .form__hp {
+    position: absolute;
+    left: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+  }
+</style>

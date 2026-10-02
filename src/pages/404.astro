@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageHero from '../components/PageHero.astro';
+---
+
+<BaseLayout
+  title="Страница не найдена — Дыханов Консалтинг"
+  description="Такой страницы нет. Перейдите на главную или в нужный раздел."
+  noindex
+  contact={false}
+>
+  <PageHero
+    compact
+    eyebrow="Ошибка 404"
+    title="Такой страницы нет"
+    lead="Возможно, она переехала после обновления сайта. Начните с главной или выберите раздел в меню."
+  >
+    <Fragment slot="actions">
+      <a class="btn btn--accent" href="/">На главную</a>
+      <a class="btn btn--ghost-light" href="/contacts/">Контакты</a>
+    </Fragment>
+  </PageHero>
+</BaseLayout>

@@ -1,0 +1,36 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/img/logo.png';
+import logoWhite from '../assets/img/logo-white.png';
+import { site } from '../data/site';
+
+interface Props {
+  variant?: 'dark' | 'light';
+}
+
+const { variant = 'dark' } = Astro.props;
+const isDark = variant === 'dark';
+---
+
+<a href="/" class="logo" aria-label={`${site.name} — на главную`}>
+  <Image
+    src={isDark ? logo : logoWhite}
+    alt=""
+    height={44}
+    densities={[1, 2]}
+    loading={isDark ? 'eager' : 'lazy'}
+  />
+</a>
+
+<style>
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
+  }
+
+  .logo img {
+    width: auto;
+    height: 44px;
+  }
+</style>

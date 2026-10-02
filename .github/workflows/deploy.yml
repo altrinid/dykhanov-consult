@@ -1,0 +1,105 @@
+# Сборка сайта и выкладка на хостинг Beget по SFTP.
+#
+# Когда запускается:
+#   - push в main: сборка и выкладка;
+#   - pull request: только сборка (проверка, что сайт собирается);
+#   - вручную: Actions → Deploy → Run workflow (ветка main).
+#
+# Секреты (Settings → Secrets and variables → Actions → Secrets):
+#   SFTP_HOST      адрес сервера из панели Beget
+#   SFTP_USER      логин Beget
+#   SFTP_PASSWORD  пароль Beget
+#   SFTP_PATH      папка сайта, заканчивается на /public_html
+# Необязательные переменные (там же, вкладка Variables):
+#   PUBLIC_YM_ID   номер счётчика Яндекс Метрики
+#   SITE_URL       адрес сайта для проверки после выкладки
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DEPLOY: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Установка зависимостей
+        run: npm ci
+
+      - name: Сборка
+        run: npm run build
+        env:
+          PUBLIC_YM_ID: ${{ vars.PUBLIC_YM_ID }}
+
+      - name: Проверка сборки
+        run: |
+          for f in index.html .htaccess api/send.php; do
+            test -f "dist/$f" || { echo "::error::В dist нет $f"; exit 1; }
+          done
+
+      - name: Проверка секретов
+        if: env.DEPLOY == 'true'
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          SFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_PATH: ${{ secrets.SFTP_PATH }}
+        run: |
+          missing=0
+          for v in SFTP_HOST SFTP_USER SFTP_PASSWORD SFTP_PATH; do
+            [ -n "${!v}" ] || { echo "::error::Не задан секрет $v"; missing=1; }
+          done
+          [ "$missing" = 0 ] || exit 1
+          # Защита от выкладки с --delete не в ту папку
+          case "${SFTP_PATH%/}" in
+            */public_html|public_html) ;;
+            *) echo "::error::SFTP_PATH должен заканчиваться на /public_html"; exit 1 ;;
+          esac
+
+      - name: Установка lftp
+        if: env.DEPLOY == 'true'
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
+      - name: Выкладка по SFTP
+        if: env.DEPLOY == 'true'
+        env:
+          SFTP_HOST: ${{ secrets.SFTP_HOST }}
+          SFTP_USER: ${{ secrets.SFTP_USER }}
+          LFTP_PASSWORD: ${{ secrets.SFTP_PASSWORD }}
+          SFTP_PATH: ${{ secrets.SFTP_PATH }}
+          SFTP_PORT: ${{ vars.SFTP_PORT || '22' }}
+        run: |
+          lftp -c "
+            set cmd:fail-exit yes
+            set net:max-retries 3
+            set net:reconnect-interval-base 5
+            set net:timeout 30
+            set sftp:auto-confirm yes
+            open --env-password -u '${SFTP_USER}' -p '${SFTP_PORT}' 'sftp://${SFTP_HOST}'
+            mirror --reverse --delete --parallel=4 --verbose=1 --exclude-glob .well-known/ dist/ '${SFTP_PATH%/}'
+          "
+
+      - name: Проверка сайта
+        if: env.DEPLOY == 'true' && vars.SITE_URL != ''
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+        run: curl -fsSL --retry 3 --retry-delay 5 -o /dev/null -w "%{http_code} %{url_effective}\n" "$SITE_URL"

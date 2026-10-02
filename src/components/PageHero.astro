@@ -1,0 +1,123 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  lead?: string;
+  stats?: readonly { value: string; label: string }[];
+  compact?: boolean;
+}
+
+const { eyebrow, title, lead, stats = [], compact = false } = Astro.props;
+---
+
+<section class:list={['hero', 'section--dark', { 'hero--compact': compact }]}>
+  <div class="container hero__inner">
+    {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+    <h1>{title}</h1>
+    {lead && <p class="hero__lead">{lead}</p>}
+    {
+      Astro.slots.has('actions') && (
+        <div class="hero__actions">
+          <slot name="actions" />
+        </div>
+      )
+    }
+    {
+      stats.length > 0 && (
+        <dl class="hero__stats">
+          {stats.map((item) => (
+            <div>
+              <dt>{item.label}</dt>
+              <dd>{item.value}</dd>
+            </div>
+          ))}
+        </dl>
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(64px, 10vw, 128px) clamp(56px, 8vw, 104px);
+    background:
+      radial-gradient(900px 520px at 88% -12%, rgb(201 162 77 / 0.22), transparent 62%),
+      radial-gradient(760px 480px at -12% 118%, rgb(76 29 170 / 0.45), transparent 62%),
+      var(--c-ink);
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgb(255 255 255 / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 0.05) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: radial-gradient(ellipse 70% 80% at 75% 30%, #000 10%, transparent 75%);
+    pointer-events: none;
+  }
+
+  .hero--compact {
+    padding-block: clamp(48px, 7vw, 88px);
+  }
+
+  .hero__inner {
+    position: relative;
+  }
+
+  .hero__inner > * + * {
+    margin-top: 20px;
+  }
+
+  .hero h1 {
+    max-width: 18ch;
+  }
+
+  .hero--compact h1 {
+    max-width: 24ch;
+  }
+
+  .hero__lead {
+    max-width: 58ch;
+    color: var(--c-on-dark-muted);
+    font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.25rem);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 12px;
+  }
+
+  .hero__stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 56px;
+    margin: 0;
+    padding-top: clamp(32px, 5vw, 56px);
+  }
+
+  .hero__stats div {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 4px;
+  }
+
+  .hero__stats dd {
+    margin: 0;
+    color: var(--c-accent);
+    font-size: clamp(2.25rem, 1.6rem + 2.4vw, 3.25rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+
+  .hero__stats dt {
+    color: var(--c-on-dark-muted);
+    font-size: 0.9375rem;
+  }
+</style>

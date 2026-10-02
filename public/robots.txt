@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /api/
+Disallow: /thanks/
+Disallow: /form-error/
+
+Sitemap: https://dykhanov-consult.ru/sitemap-index.xml

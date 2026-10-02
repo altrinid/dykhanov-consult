@@ -1,0 +1,31 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import NewsCard from '../../components/NewsCard.astro';
+import PageHero from '../../components/PageHero.astro';
+import { getNews } from '../../lib/news';
+
+const news = await getNews();
+---
+
+<BaseLayout
+  title="Новости — Дыханов Консалтинг"
+  description="Новости компании «Дыханов Консалтинг»: проекты, события и публикации."
+>
+  <PageHero compact eyebrow="Новости" title="Новости компании" />
+
+  <section class="section">
+    <div class="container">
+      {
+        news.length > 0 ? (
+          <div class="grid grid--3">
+            {news.map((item) => (
+              <NewsCard item={item} />
+            ))}
+          </div>
+        ) : (
+          <p class="todo">Новости перенесём со старого сайта.</p>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>
