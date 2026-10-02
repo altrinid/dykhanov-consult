@@ -13,10 +13,10 @@ const {
 } = Astro.props;
 ---
 
-<section class="section section--dark contact" id="contact" aria-labelledby="contact-title">
+<section class="section section--dark contact" id="contacts" aria-labelledby="contact-title">
   <div class="container contact__grid">
     <div class="contact__info">
-      <span class="eyebrow">Консультация</span>
+      <span class="eyebrow">Контакты</span>
       <h2 id="contact-title">{title}</h2>
       <p class="contact__text">{text}</p>
       <dl class="contact__list">
@@ -31,6 +31,18 @@ const {
         <div>
           <dt>Офис</dt>
           <dd><a href={site.mapUrl} target="_blank" rel="noopener">{fullAddress}</a></dd>
+        </div>
+        <div>
+          <dt>Соцсети</dt>
+          <dd class="contact__social">
+            {
+              site.social.map((item) => (
+                <a href={item.href} target="_blank" rel="noopener">
+                  {item.label}
+                </a>
+              ))
+            }
+          </dd>
         </div>
       </dl>
     </div>
@@ -85,5 +97,11 @@ const {
 
   .contact__list a:hover {
     text-decoration: underline;
+  }
+
+  .contact__social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
   }
 </style>

@@ -35,7 +35,7 @@ const steps = [
     stats={site.stats}
   >
     <Fragment slot="actions">
-      <a class="btn btn--accent" href="#contact">Обсудить задачу</a>
+      <a class="btn btn--accent" href="#contacts">Обсудить задачу</a>
       <a class="btn btn--ghost-light" href={site.phoneHref}>{site.phone}</a>
     </Fragment>
   </PageHero>
@@ -46,7 +46,7 @@ const steps = [
         <span class="eyebrow">Компетенции</span>
         <h2 id="areas-title">Направления консалтинга</h2>
       </div>
-      <div class="grid grid--3">
+      <div class="grid grid--4">
         {
           services.map((item) => (
             <article class="card">

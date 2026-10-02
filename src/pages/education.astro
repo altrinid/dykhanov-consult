@@ -4,7 +4,7 @@ import PageHero from '../components/PageHero.astro';
 import { site } from '../data/site';
 
 // Если анкета в Яндекс Формах не задана, кнопка ведёт к форме заявки внизу страницы
-const questionnaireHref = site.questionnaireUrl || '#contact';
+const questionnaireHref = site.questionnaireUrl || '#contacts';
 const isExternal = questionnaireHref.startsWith('http');
 
 // TODO: услуги, кейсы и партнёров перенести со старого сайта «Образование за рубежом»

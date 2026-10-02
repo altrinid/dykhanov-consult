@@ -1,41 +1,63 @@
 ---
+import { Image } from 'astro:assets';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import NewsCard from '../components/NewsCard.astro';
 import PageHero from '../components/PageHero.astro';
-import { services, site } from '../data/site';
+import portrait from '../assets/img/dykhanov.jpg';
+import visionPhoto from '../assets/img/vision.jpg';
+import { partners } from '../data/partners';
+import { site } from '../data/site';
 import { getNews } from '../lib/news';
 
 const latestNews = (await getNews()).slice(0, 3);
 
-// TODO: описания направлений — сверить с текстами старого сайта
+// Три направления — ссылки с первого экрана старого сайта
 const directions = [
   {
     num: '01',
-    title: 'Дыханов Консалтинг',
-    text: 'Управленческий консалтинг для собственников и руководителей: финансы, маркетинг, корпоративное управление.',
-    href: '#services',
-    cta: 'Услуги',
-  },
-  {
-    num: '02',
-    title: 'Эксперт Консалтинг',
-    text: 'Экспертные и консультационные услуги для компаний: от диагностики до сопровождения изменений.',
+    title: 'Управленческий консалтинг',
+    text: 'Стратегия, маркетинг, финансы и бизнес-процессы на основе лучших практик успешных компаний.',
     href: '/expert-consulting/',
     cta: 'Подробнее',
   },
   {
-    num: '03',
+    num: '02',
     title: 'Образование за рубежом',
-    text: 'Подбор страны, программы и учебного заведения, сопровождение поступления.',
-    href: '/education-abroad/',
+    text: 'Открываем молодёжи горизонты для обучения профессиям будущего в России и за рубежом.',
+    href: '/education/',
     cta: 'Подробнее',
   },
+  {
+    num: '03',
+    title: 'Бизнес-сообщество «Деловая Россия»',
+    text: 'Продвигаем интересы бизнеса и добиваемся улучшения инвестклимата и регуляторной среды через диалог с органами власти.',
+    href: site.head.delorosUrl,
+    cta: 'Профиль на deloros.ru',
+    external: true,
+  },
+];
+
+// Блок «У нас есть» старого сайта
+const strengths = [
+  'Деловая репутация и обширные деловые связи в бизнес-сообществе на местном и российском рынках, а также за рубежом.',
+  'Квалификация консультантов и более чем 20-летний опыт работы в российских и зарубежных проектах.',
+  'Сложившаяся клиентская база компаний, которые дорожат своей репутацией и стремятся соответствовать мировым корпоративным стандартам, при этом работают и продолжают расти в сложных экономических условиях.',
+  'Уникальные управленческие технологии в области стратегии, маркетинга, финансов, бизнес-процессов на основе лучших практик успешных компаний.',
+];
+
+// Блок «Наши конкурентные преимущества» старого сайта
+const advantages = [
+  'Деловая репутация и узнаваемость на местном рынке',
+  'Квалификация консультантов, международный опыт и связи',
+  'Сложившаяся клиентская база',
+  'Уникальная для местного рынка технология работы, система качества, бизнес-процессы и консалтинговые продукты',
 ];
 
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'ProfessionalService',
   name: site.name,
+  alternateName: site.nameEn,
   url: `${site.url}/`,
   logo: `${site.url}/apple-touch-icon.png`,
   image: `${site.url}/og-image.png`,
@@ -49,22 +71,28 @@ const jsonLd = {
     postalCode: site.address.postalCode,
     addressCountry: 'RU',
   },
+  employee: {
+    '@type': 'Person',
+    name: site.head.name,
+    jobTitle: site.head.role,
+  },
+  sameAs: site.social.map((item) => item.href),
 };
 ---
 
 <BaseLayout
-  title="Бизнес-консалтинг в Калининграде — Дыханов Консалтинг"
-  description="Консалтинг в области финансов, маркетинга и корпоративного управления. 25+ лет на рынке, 700+ проектов. Запишитесь на консультацию."
+  title="Управленческий консалтинг в Калининграде — Дыханов Консалтинг"
+  description="Помогаем компаниям занять лидирующие позиции на рынке, поднять доходы и производительность труда. Более 700 проектов, система качества по ISO 9001."
   jsonLd={jsonLd}
 >
   <PageHero
-    eyebrow={site.name}
-    title="Бизнес-консалтинг в Калининграде"
-    lead="Финансы, маркетинг и корпоративное управление. Помогаем собственникам и руководителям разобраться в ситуации и принять взвешенное решение."
+    eyebrow={site.nameEn}
+    title="Управленческий консалтинг в Калининграде"
+    lead="Помогаем компаниям занять лидирующие позиции на рынке, поднять свои доходы и производительность труда."
     stats={site.stats}
   >
     <Fragment slot="actions">
-      <a class="btn btn--accent" href="#contact">Получить консультацию</a>
+      <a class="btn btn--accent" href="#contacts">Перезвоните мне</a>
       <a class="btn btn--ghost-light" href={site.phoneHref}>{site.phone}</a>
     </Fragment>
   </PageHero>
@@ -73,7 +101,7 @@ const jsonLd = {
     <div class="container">
       <div class="section-head">
         <span class="eyebrow">Направления</span>
-        <h2 id="directions-title">Три направления работы</h2>
+        <h2 id="directions-title">Чем мы занимаемся</h2>
       </div>
       <div class="grid grid--3">
         {
@@ -84,7 +112,12 @@ const jsonLd = {
               </span>
               <h3>{item.title}</h3>
               <p>{item.text}</p>
-              <a class="direction__link" href={item.href}>
+              <a
+                class="direction__link"
+                href={item.href}
+                target={item.external ? '_blank' : undefined}
+                rel={item.external ? 'noopener' : undefined}
+              >
                 {item.cta}
                 <span class="sr-only">: {item.title}</span>
                 <span aria-hidden="true">→</span>
@@ -96,53 +129,112 @@ const jsonLd = {
     </div>
   </section>
 
-  <section class="section section--surface" id="services" aria-labelledby="services-title">
-    <div class="container">
-      <div class="section-head">
-        <span class="eyebrow">Чем помогаем</span>
-        <h2 id="services-title">Консалтинг по ключевым задачам бизнеса</h2>
-        <p>Работаем с компаниями в Калининграде и регионе. Начинаем с диагностики, чтобы предложить решение под конкретную задачу.</p>
-      </div>
-      <div class="grid grid--3">
-        {
-          services.map((item) => (
-            <article class="card">
-              <h3>{item.title}</h3>
-              <p>{item.text}</p>
-            </article>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  <section class="section" aria-labelledby="about-title">
+  <section class="section section--surface" id="about" aria-labelledby="about-title">
     <div class="container about">
       <figure class="about__photo">
-        {/* TODO: заменить заглушку фото со старого сайта (src/assets + <Image />) */}
-        <div class="about__placeholder" aria-hidden="true">ГД</div>
+        <Image
+          src={portrait}
+          alt={`${site.head.name}, ${site.head.role.toLowerCase()}`}
+          widths={[420, 840]}
+          sizes="(min-width: 860px) 420px, 100vw"
+        />
+        <figcaption>
+          <strong>{site.head.name}</strong>
+          <span>{site.head.role}, {site.head.company}</span>
+        </figcaption>
       </figure>
       <div class="about__text">
-        <span class="eyebrow">{site.head.role}</span>
-        <h2 id="about-title">{site.head.name}</h2>
-        <p class="todo">Биографию и опыт перенесём со старого сайта.</p>
+        <span class="eyebrow">О нас</span>
+        <h2 id="about-title">Консалтинг, обучение и бизнес-сообщество</h2>
         <p>
-          <a class="btn btn--ghost" href={site.head.delorosUrl} target="_blank" rel="noopener">
-            Профиль в «Деловой России»
-          </a>
+          Наши проекты охватывают широкий спектр деятельности: от внедрения инноваций, управления
+          качеством, принципов корпоративного управления и других эффективных инструментов управления в
+          компаниях и на рабочем месте до продвижения интересов бизнеса, улучшения инвестклимата и
+          совершенствования регуляторной среды через взаимодействие с органами власти в рамках
+          общероссийского бизнес-сообщества «Деловая Россия».
+        </p>
+        <p>
+          Мы способствуем повышению профессиональных знаний на обучающих площадках России и Европы. Все,
+          кто неравнодушен и стремится к развитию и повышению своего профессионального уровня, найдут в
+          нашем лице поддержку для развития своего бизнеса и личностного роста.
         </p>
       </div>
     </div>
   </section>
 
+  <section class="section" aria-labelledby="vision-title">
+    <div class="container vision">
+      <div class="vision__text">
+        <span class="eyebrow">Видение</span>
+        <h2 id="vision-title">Видение компании</h2>
+        <p class="vision__lead">
+          Компаниям помогаем занять лидирующие позиции на рынке, поднять свои доходы и
+          производительность труда. Молодёжи открываем горизонты для обучения профессиям будущего в
+          России и за рубежом. Всем предпринимателям помогаем создавать благоприятные условия для
+          развития предпринимательства и экономического роста через бизнес-сообщество «Деловая Россия».
+        </p>
+        <h3>У нас есть</h3>
+        <ul class="ticks">
+          {strengths.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+      <div class="vision__photo">
+        <Image
+          src={visionPhoto}
+          alt=""
+          widths={[480, 960]}
+          sizes="(min-width: 960px) 420px, 100vw"
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--dark" aria-labelledby="advantages-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Почему мы</span>
+        <h2 id="advantages-title">Наши конкурентные преимущества</h2>
+        <p>
+          Высокий уровень качества услуг, профессионализм консультантов и деловая репутация «Дыханов
+          Консалтинг» подтверждаются многолетней успешной работой, сертификацией системы менеджмента
+          качества на соответствие международному стандарту ISO 9001 в 2002 году и ресертификациями в
+          2005, 2008 и 2012 годах, а также более чем 700 успешными проектами в области управленческого
+          консалтинга.
+        </p>
+      </div>
+      <ol class="advantages">
+        {advantages.map((item) => <li>{item}</li>)}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section" aria-labelledby="qualification-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Квалификации, образование</span>
+        <h2 id="qualification-title">Где учились наши консультанты</h2>
+        <p>Наши консультанты прошли обучение и/или сертифицированы такими организациями, как:</p>
+      </div>
+      <ul class="partners">
+        {
+          partners.map((item) => (
+            <li>
+              <Image src={item.logo} alt={item.name} height={72} densities={[1, 2]} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
   {
     latestNews.length > 0 && (
-      <section class="section section--surface" aria-labelledby="news-title">
+      <section class="section section--surface" id="releases" aria-labelledby="news-title">
         <div class="container">
           <div class="section-head news-head">
             <div>
-              <span class="eyebrow">Новости</span>
-              <h2 id="news-title">Последние новости</h2>
+              <span class="eyebrow">Пресс-центр</span>
+              <h2 id="news-title">Наши проекты и достижения</h2>
             </div>
             <a class="btn btn--ghost" href="/news/">
               Все новости
@@ -179,7 +271,7 @@ const jsonLd = {
   .direction__link {
     display: inline-flex;
     gap: 6px;
-    color: var(--c-ink);
+    color: var(--c-brand);
     font-weight: 700;
     text-decoration: none;
   }
@@ -196,7 +288,7 @@ const jsonLd = {
 
   @media (min-width: 860px) {
     .about {
-      grid-template-columns: minmax(260px, 0.8fr) 1.2fr;
+      grid-template-columns: minmax(280px, 420px) 1fr;
     }
   }
 
@@ -204,23 +296,155 @@ const jsonLd = {
     margin: 0;
   }
 
-  .about__placeholder {
-    display: grid;
-    place-items: center;
-    aspect-ratio: 4 / 5;
+  .about__photo img {
+    width: 100%;
     max-width: 420px;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
     border-radius: var(--radius);
-    background:
-      radial-gradient(420px 320px at 80% 0%, rgb(201 162 77 / 0.35), transparent 60%),
-      var(--c-ink);
-    color: rgb(255 255 255 / 0.85);
-    font-size: clamp(3rem, 2rem + 4vw, 5rem);
-    font-weight: 800;
-    letter-spacing: 0.04em;
+  }
+
+  .about__photo figcaption {
+    display: grid;
+    gap: 2px;
+    margin-top: 14px;
+  }
+
+  .about__photo figcaption strong {
+    color: var(--c-ink);
+    font-size: 1.125rem;
+  }
+
+  .about__photo figcaption span {
+    color: var(--c-muted);
   }
 
   .about__text > * + * {
     margin-top: 16px;
+  }
+
+  .vision {
+    display: grid;
+    gap: clamp(28px, 5vw, 64px);
+    align-items: center;
+  }
+
+  @media (min-width: 960px) {
+    .vision {
+      grid-template-columns: 1fr minmax(300px, 420px);
+    }
+  }
+
+  .vision__text > * + * {
+    margin-top: 18px;
+  }
+
+  .vision__lead {
+    font-size: 1.125rem;
+  }
+
+  .vision__text h3 {
+    padding-top: 10px;
+  }
+
+  .ticks {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ticks li {
+    position: relative;
+    padding-left: 30px;
+  }
+
+  .ticks li::before {
+    content: '';
+    position: absolute;
+    top: 0.45em;
+    left: 0;
+    width: 16px;
+    height: 10px;
+    border-left: 2.5px solid var(--c-accent-ink);
+    border-bottom: 2.5px solid var(--c-accent-ink);
+    transform: rotate(-45deg);
+  }
+
+  .vision__photo img {
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: var(--radius);
+  }
+
+  @media (max-width: 959.98px) {
+    .vision__photo img {
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  .advantages {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+    gap: clamp(16px, 2.4vw, 24px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: adv;
+  }
+
+  .advantages li {
+    counter-increment: adv;
+    padding: 24px;
+    border: 1px solid rgb(255 255 255 / 0.14);
+    border-radius: var(--radius);
+    background: rgb(255 255 255 / 0.04);
+    color: #fff;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.45;
+  }
+
+  .advantages li::before {
+    content: counter(adv, decimal-leading-zero);
+    display: block;
+    margin-bottom: 14px;
+    color: var(--c-accent);
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  /* flex с центровкой: неполный последний ряд встаёт по центру */
+  .partners {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .partners li {
+    display: grid;
+    flex: 0 1 170px;
+    place-items: center;
+    min-height: 120px;
+    padding: 20px;
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius);
+    background: #fff;
+  }
+
+  .partners img {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 72px;
+    object-fit: contain;
   }
 
   .news-head {

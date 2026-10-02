@@ -26,8 +26,8 @@ const { title, description, image, noindex = false, jsonLd, contact = true } = A
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#0d1b2e" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#170842" />
+    <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <SEO
       title={title}
@@ -40,7 +40,7 @@ const { title, description, image, noindex = false, jsonLd, contact = true } = A
   </head>
   <body>
     <a class="skip-link" href="#main">Перейти к содержанию</a>
-    <Header ctaHref={contact ? '#contact' : '/contacts/#contact'} />
+    <Header ctaHref={contact ? '#contacts' : '/contacts/#contacts'} />
     <main id="main">
       <slot />
       {contact && <ContactSection />}

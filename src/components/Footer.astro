@@ -36,6 +36,15 @@ const requisites = [
         <li><a href={site.phoneHref}>{site.phone}</a></li>
         <li><a href={`mailto:${site.email}`}>{site.email}</a></li>
         <li><a href={site.mapUrl} target="_blank" rel="noopener">{fullAddress}</a></li>
+        {
+          site.social.map((item) => (
+            <li>
+              <a href={item.href} target="_blank" rel="noopener">
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
       </ul>
     </div>
   </div>
@@ -51,7 +60,7 @@ const requisites = [
 
 <style>
   .footer {
-    background: #0a1524;
+    background: #10052e;
     color: var(--c-on-dark-muted);
     font-size: 0.9375rem;
   }

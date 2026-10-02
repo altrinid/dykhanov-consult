@@ -17,8 +17,9 @@ AddDefaultCharset utf-8
   RewriteCond %{HTTP_HOST} ^www\. [NC]
   RewriteRule ^ https://dykhanov-consult.ru%{REQUEST_URI} [R=301,L]
 
-  # Старые адреса страниц Tilda → новые. Дополнить после разбора старого сайта.
-  # RewriteRule ^page12345\.html$ /expert-consulting/ [R=301,L]
+  # Старые адреса страниц Tilda → новые
+  RewriteRule ^privacy-policy/?$ /privacy/ [R=301,L]
+  RewriteRule ^agreement/?$ /consent/ [R=301,L]
 </IfModule>
 
 <IfModule mod_headers.c>

@@ -6,7 +6,7 @@ interface Props {
   ctaHref?: string;
 }
 
-const { ctaHref = '#contact' } = Astro.props;
+const { ctaHref = '#contacts' } = Astro.props;
 const path = Astro.url.pathname;
 const isActive = (href: string) => path === href || path.startsWith(href);
 ---
@@ -40,7 +40,7 @@ const isActive = (href: string) => path === href || path.startsWith(href);
       </ul>
       <div class="header__actions">
         <a class="header__phone" href={site.phoneHref}>{site.phone}</a>
-        <a class="btn btn--dark header__cta" href={ctaHref}>Консультация</a>
+        <a class="btn btn--dark header__cta" href={ctaHref}>Перезвоните мне</a>
       </div>
     </nav>
   </div>
