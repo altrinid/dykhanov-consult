@@ -142,7 +142,7 @@ const jsonLd = {
           projects.map((project) => (
             <article class="project">
               {project.images.length > 0 ? (
-                <div class="project__gallery">
+                <div class="project__gallery" data-count={Math.min(project.images.length, 5)}>
                   {project.images.slice(0, 5).map((img, i) => (
                     <a
                       class:list={['project__photo', { 'project__photo--main': i === 0 }]}
@@ -292,23 +292,28 @@ const jsonLd = {
         {
           austriaPartners.map((person) => (
             <li class="person">
-              {person.photo ? (
-                <Image
-                  class="person__photo"
-                  src={person.photo}
-                  alt={person.name}
-                  width={112}
-                  height={112}
-                  densities={[1, 2]}
-                />
-              ) : (
-                <span class="person__photo person__photo--initials" aria-hidden="true">
-                  {initials(person.name)}
-                </span>
-              )}
-              <div class="person__body">
-                <h3>{person.name}</h3>
-                <p>{person.role}</p>
+              <div class="person__head">
+                {person.photo ? (
+                  <Image
+                    class="person__photo"
+                    src={person.photo}
+                    alt={person.name}
+                    width={96}
+                    height={96}
+                    densities={[1, 2]}
+                  />
+                ) : (
+                  <span class="person__photo person__photo--initials" aria-hidden="true">
+                    {initials(person.name)}
+                  </span>
+                )}
+                <div>
+                  <h3>{person.name}</h3>
+                  <p class="person__role">{person.role}</p>
+                </div>
+              </div>
+              <p class="person__bio">{person.bio}</p>
+              <div class="person__links">
                 <a class="person__link" href={person.linkedin} target="_blank" rel="noopener">
                   <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path
@@ -316,8 +321,15 @@ const jsonLd = {
                       d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"
                     />
                   </svg>
-                  Профиль в LinkedIn
+                  LinkedIn
                   <span class="sr-only">: {person.name}</span>
+                </a>
+                <a class="person__link" href={person.website.href} target="_blank" rel="noopener">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" />
+                  </svg>
+                  {person.website.label}
                 </a>
               </div>
             </li>
@@ -565,9 +577,22 @@ const jsonLd = {
     background: #fff;
   }
 
+  .project + .project {
+    margin-top: 24px;
+  }
+
   @media (min-width: 900px) {
     .project {
       grid-template-columns: 3fr 2fr;
+    }
+
+    /* Зигзаг: у чётных проектов фото справа */
+    .project:nth-of-type(even) {
+      grid-template-columns: 2fr 3fr;
+    }
+
+    .project:nth-of-type(even) > :first-child {
+      order: 2;
     }
   }
 
@@ -576,7 +601,25 @@ const jsonLd = {
     grid-template-columns: 2fr 1fr;
     grid-auto-rows: minmax(120px, 1fr);
     gap: 4px;
-    min-height: 320px;
+    min-height: 340px;
+  }
+
+  .project__gallery[data-count='1'] {
+    grid-template-columns: 1fr;
+  }
+
+  .project__gallery[data-count='2'] {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .project__gallery[data-count='4'],
+  .project__gallery[data-count='5'] {
+    grid-template-columns: 2fr 1fr 1fr;
+  }
+
+  .project__gallery[data-count='1'] .project__photo--main,
+  .project__gallery[data-count='2'] .project__photo--main {
+    grid-row: auto;
   }
 
   .project__photo {
@@ -656,20 +699,31 @@ const jsonLd = {
 
   .person {
     display: flex;
-    align-items: center;
-    gap: 22px;
-    padding: clamp(20px, 3vw, 28px);
+    flex-direction: column;
+    gap: 16px;
+    padding: clamp(22px, 3vw, 30px);
     border: 1px solid var(--c-line);
     border-radius: var(--radius);
     background: #fff;
   }
 
+  .person__head {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .person__head h3 {
+    margin-bottom: 6px;
+  }
+
   .person__photo {
     flex: none;
-    width: 112px;
-    height: 112px;
+    width: 96px;
+    height: 96px;
     border-radius: 50%;
     object-fit: cover;
+    box-shadow: 0 0 0 4px #fff, 0 0 0 5px var(--c-line);
   }
 
   .person__photo--initials {
@@ -679,43 +733,33 @@ const jsonLd = {
       radial-gradient(120px 80px at 80% 0%, rgb(201 162 77 / 0.45), transparent 70%),
       var(--c-brand);
     color: #fff;
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 800;
   }
 
-  @media (max-width: 480px) {
-    .person {
-      gap: 16px;
-    }
-
-    .person__photo {
-      width: 80px;
-      height: 80px;
-    }
-
-    .person__photo--initials {
-      font-size: 1.5rem;
-    }
-  }
-
-  .person__body {
-    display: grid;
-    gap: 6px;
-  }
-
-  .person__body h3 {
-    margin: 0;
-  }
-
-  .person__body p {
+  .person__role {
     color: var(--c-muted);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+  }
+
+  .person__bio {
+    color: var(--c-text);
+  }
+
+  .person__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px solid var(--c-line);
   }
 
   .person__link {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    margin-top: 4px;
     color: var(--c-brand);
     font-weight: 700;
     text-decoration: none;
@@ -728,6 +772,21 @@ const jsonLd = {
 
   .person__link:hover {
     color: var(--c-accent-ink);
+  }
+
+  @media (max-width: 480px) {
+    .person__head {
+      gap: 14px;
+    }
+
+    .person__photo {
+      width: 72px;
+      height: 72px;
+    }
+
+    .person__photo--initials {
+      font-size: 1.375rem;
+    }
   }
 
   .news-head {
