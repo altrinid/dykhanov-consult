@@ -45,6 +45,14 @@ cover: ./2026-10-01-zagolovok.jpg # необязательно; картинка
 
 Адрес новости — `/news/2026-10-01-zagolovok/`. Черновик скрывается полем `draft: true`.
 
+## Предпросмотр
+
+После каждого push GitHub Actions (workflow `Preview`) выкладывает сайт на GitHub Pages:
+https://altrinid.github.io/dykhanov-consult/. По ссылке всегда последняя отправленная версия.
+Предпросмотр закрыт от поисковиков, форма в нём не отправляется (`scripts/preview.mjs`).
+
+Включить один раз: Settings → Pages → Source: Deploy from a branch → `gh-pages`, `/ (root)`.
+
 ## Публикация
 
 Нужен российский хостинг с Apache и PHP 7.4+ (Beget, Timeweb, REG.RU и т. п.):

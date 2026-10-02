@@ -8,6 +8,8 @@
 - `npm install`, `npm run dev`, `npm run build` (astro check + сборка), `npm run preview`
 - Проверка формы с перехватом писем:
   `npm run build && php -d sendmail_path="tee -a /tmp/mail.log" -S 127.0.0.1:8080 -t dist`
+- Предпросмотр: https://altrinid.github.io/dykhanov-consult/ — его обновляет workflow `Preview` после
+  каждого push (ветка `gh-pages`, копию готовит `scripts/preview.mjs`).
 
 ## Правила
 
