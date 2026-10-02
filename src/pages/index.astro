@@ -5,11 +5,19 @@ import NewsCard from '../components/NewsCard.astro';
 import PageHero from '../components/PageHero.astro';
 import portrait from '../assets/img/dykhanov.jpg';
 import visionPhoto from '../assets/img/vision.jpg';
+import { austriaPartners } from '../data/austria';
 import { partners } from '../data/partners';
+import { projects } from '../data/projects';
 import { site } from '../data/site';
 import { getNews } from '../lib/news';
 
 const latestNews = (await getNews()).slice(0, 3);
+
+const initials = (name: string) =>
+  name
+    .split(' ')
+    .map((part) => part[0])
+    .join('');
 
 // Три направления — ссылки с первого экрана старого сайта
 const directions = [
@@ -93,7 +101,7 @@ const jsonLd = {
     stats={site.stats}
   >
     <Fragment slot="actions">
-      <a class="btn btn--accent" href="#contacts">Перезвоните мне</a>
+      <a class="btn btn--accent" href="#contacts">Перезвоните нам</a>
       <a class="btn btn--ghost-light" href={site.phoneHref}>{site.phone}</a>
     </Fragment>
   </PageHero>
@@ -123,6 +131,52 @@ const jsonLd = {
                 <span class="sr-only">: {item.title}</span>
                 <span aria-hidden="true">→</span>
               </a>
+            </article>
+          ))
+        }
+      </div>
+
+      <div class="projects">
+        <h3 class="projects__title">Проекты</h3>
+        {
+          projects.map((project) => (
+            <article class="project">
+              {project.images.length > 0 ? (
+                <div class="project__gallery">
+                  {project.images.slice(0, 5).map((img, i) => (
+                    <a
+                      class:list={['project__photo', { 'project__photo--main': i === 0 }]}
+                      href={img.src}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      <Image
+                        src={img}
+                        alt={`${project.title}, фото ${i + 1}`}
+                        widths={i === 0 ? [640, 1280] : [320, 640]}
+                        sizes={i === 0 ? '(min-width: 960px) 640px, 100vw' : '(min-width: 960px) 320px, 50vw'}
+                      />
+                    </a>
+                  ))}
+                </div>
+              ) : (
+                <div class="project__placeholder" aria-hidden="true">
+                  <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M32 8v36" />
+                    <path d="M32 12 14 40h18" />
+                    <path d="m36 18 14 22H36" />
+                    <path d="M8 46h48l-6 8H14z" />
+                  </svg>
+                </div>
+              )}
+              <div class="project__body">
+                <span class="eyebrow">Проект</span>
+                <h4>{project.title}</h4>
+                <p>{project.text}</p>
+                <a class="project__link" href={project.url} target="_blank" rel="noopener">
+                  Подробнее о проекте <span aria-hidden="true">→</span>
+                </a>
+              </div>
             </article>
           ))
         }
@@ -221,6 +275,51 @@ const jsonLd = {
           partners.map((item) => (
             <li>
               <Image src={item.logo} alt={item.name} height={72} densities={[1, 2]} />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <section class="section section--surface" aria-labelledby="austria-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Международное сотрудничество</span>
+        <h2 id="austria-title">Наши партнёры в Австрии</h2>
+      </div>
+      <ul class="people">
+        {
+          austriaPartners.map((person) => (
+            <li class="person">
+              {person.photo ? (
+                <Image
+                  class="person__photo"
+                  src={person.photo}
+                  alt={person.name}
+                  width={112}
+                  height={112}
+                  densities={[1, 2]}
+                />
+              ) : (
+                <span class="person__photo person__photo--initials" aria-hidden="true">
+                  {initials(person.name)}
+                </span>
+              )}
+              <div class="person__body">
+                <h3>{person.name}</h3>
+                <p>{person.role}</p>
+                <a class="person__link" href={person.linkedin} target="_blank" rel="noopener">
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path
+                      fill="currentColor"
+                      d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"
+                    />
+                  </svg>
+                  Профиль в LinkedIn
+                  <span class="sr-only">: {person.name}</span>
+                </a>
+              </div>
             </li>
           ))
         }
@@ -446,6 +545,189 @@ const jsonLd = {
     height: auto;
     max-height: 72px;
     object-fit: contain;
+  }
+
+  /* Галерея проектов в блоке «Чем мы занимаемся» */
+  .projects {
+    margin-top: clamp(40px, 6vw, 72px);
+  }
+
+  .projects__title {
+    margin-bottom: 20px;
+    font-size: clamp(1.35rem, 1.1rem + 0.9vw, 1.75rem);
+  }
+
+  .project {
+    display: grid;
+    overflow: hidden;
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius);
+    background: #fff;
+  }
+
+  @media (min-width: 900px) {
+    .project {
+      grid-template-columns: 3fr 2fr;
+    }
+  }
+
+  .project__gallery {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-auto-rows: minmax(120px, 1fr);
+    gap: 4px;
+    min-height: 320px;
+  }
+
+  .project__photo {
+    display: block;
+    overflow: hidden;
+  }
+
+  .project__photo--main {
+    grid-row: span 2;
+  }
+
+  .project__photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .project__photo:hover img {
+    transform: scale(1.04);
+  }
+
+  .project__placeholder {
+    display: grid;
+    place-items: center;
+    min-height: 300px;
+    background:
+      radial-gradient(500px 260px at 80% 10%, rgb(201 162 77 / 0.3), transparent 60%),
+      linear-gradient(160deg, var(--c-brand), var(--c-ink));
+    color: var(--c-accent);
+  }
+
+  .project__placeholder svg {
+    width: 96px;
+    height: 96px;
+    opacity: 0.85;
+  }
+
+  .project__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+    padding: clamp(24px, 3.5vw, 44px);
+  }
+
+  .project__body h4 {
+    margin: 0;
+    color: var(--c-ink);
+    font-size: 1.375rem;
+    line-height: 1.25;
+  }
+
+  .project__body p {
+    color: var(--c-muted);
+  }
+
+  .project__link {
+    color: var(--c-brand);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .project__link:hover {
+    color: var(--c-accent-ink);
+  }
+
+  /* Партнёры в Австрии */
+  .people {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+    gap: clamp(16px, 2.4vw, 24px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .person {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: clamp(20px, 3vw, 28px);
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius);
+    background: #fff;
+  }
+
+  .person__photo {
+    flex: none;
+    width: 112px;
+    height: 112px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .person__photo--initials {
+    display: grid;
+    place-items: center;
+    background:
+      radial-gradient(120px 80px at 80% 0%, rgb(201 162 77 / 0.45), transparent 70%),
+      var(--c-brand);
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 800;
+  }
+
+  @media (max-width: 480px) {
+    .person {
+      gap: 16px;
+    }
+
+    .person__photo {
+      width: 80px;
+      height: 80px;
+    }
+
+    .person__photo--initials {
+      font-size: 1.5rem;
+    }
+  }
+
+  .person__body {
+    display: grid;
+    gap: 6px;
+  }
+
+  .person__body h3 {
+    margin: 0;
+  }
+
+  .person__body p {
+    color: var(--c-muted);
+  }
+
+  .person__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+    color: var(--c-brand);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .person__link svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .person__link:hover {
+    color: var(--c-accent-ink);
   }
 
   .news-head {

@@ -8,6 +8,17 @@ import { services, site } from '../data/site';
 
 // Тексты — со страницы /expert-consulting старого сайта (архив от 27.03.2025)
 
+// Иконки направлений: финансы — рост, маркетинг — цель, управление — оргструктура
+const svg = (body: string) =>
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${body}</svg>`;
+const serviceIcons: Record<(typeof services)[number]['icon'], string> = {
+  finance: svg('<path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 6-7"/><path d="M15 7h5v5"/>'),
+  marketing: svg('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>'),
+  governance: svg(
+    '<rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-4h12v4"/>',
+  ),
+};
+
 const stats = [
   { value: '1997', label: 'год основания компании' },
   { value: '900+', label: 'успешных проектов разной сложности' },
@@ -122,14 +133,23 @@ const initials = (name: string) =>
       </div>
       <div class="grid grid--3">
         {
-          services.map((group) => (
-            <article class="card service">
+          services.map((group, index) => (
+            <article class="service">
+              <div class="service__top">
+                <span class="service__icon" aria-hidden="true" set:html={serviceIcons[group.icon]} />
+                <span class="service__num" aria-hidden="true">
+                  {String(index + 1).padStart(2, '0')}
+                </span>
+              </div>
               <h3>{group.title}</h3>
-              <ul>
+              <ul class="service__tags">
                 {group.items.map((item) => (
                   <li>{item}</li>
                 ))}
               </ul>
+              <a class="service__link" href="#contacts">
+                Обсудить задачу <span aria-hidden="true">→</span>
+              </a>
             </article>
           ))
         }
@@ -264,29 +284,92 @@ const initials = (name: string) =>
     margin-top: 16px;
   }
 
-  .service ul {
+  .service {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: clamp(24px, 3vw, 34px);
+    overflow: hidden;
+    border: 1px solid var(--c-line);
+    border-radius: var(--radius);
+    background: #fff;
+    transition:
+      transform 0.25s ease,
+      box-shadow 0.25s ease;
+  }
+
+  /* Фирменная полоса сверху карточки */
+  .service::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    height: 4px;
+    background: linear-gradient(90deg, var(--c-brand), var(--c-accent));
+  }
+
+  .service:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow);
+  }
+
+  .service__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+
+  .service__icon {
     display: grid;
+    place-items: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: var(--c-brand);
+    color: var(--c-accent);
+  }
+
+  .service__icon :global(svg) {
+    width: 28px;
+    height: 28px;
+  }
+
+  .service__num {
+    color: rgb(44 0 115 / 0.12);
+    font-size: 2.75rem;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .service__tags {
+    display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .service li {
-    position: relative;
-    padding-left: 18px;
-    color: var(--c-text);
+  .service__tags li {
+    padding: 7px 14px;
+    border-radius: 999px;
+    background: var(--c-surface);
+    color: var(--c-ink);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.3;
   }
 
-  .service li::before {
-    content: '';
-    position: absolute;
-    top: 0.62em;
-    left: 0;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--c-accent);
+  .service__link {
+    margin-top: auto;
+    padding-top: 6px;
+    color: var(--c-brand);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .service__link:hover {
+    color: var(--c-accent-ink);
   }
 
   .timeline {
